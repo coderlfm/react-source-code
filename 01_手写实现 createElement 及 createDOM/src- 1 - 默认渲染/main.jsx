@@ -17,23 +17,23 @@ const element = createElement(
   "react"
 );
 
-// const element = {
-//   type: "h1",
-//   props: {
-//     style: {
-//       color: "red",
-//     },
-//     children: [
-//       {
-//         type: "span",
-//         props: {
-//           children: "hello",
-//         },
-//       },
-//       "react",
-//     ],
-//   },
-// };
+const element = {
+  type: "h1",
+  props: {
+    style: {
+      color: "red",
+    },
+    children: [
+      {
+        type: "span",
+        props: {
+          children: "hello",
+        },
+      },
+      "react",
+    ],
+  },
+};
 
 // console.log(JSON.stringify(element, null, 2));
 

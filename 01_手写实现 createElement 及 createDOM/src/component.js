@@ -1,4 +1,87 @@
-import { createDOM } from './react-dom.js'
+import { isFunction } from "../utils/index.js";
+import { createDOM } from "./react-dom.js";
+
+// 更新队列，全局单例
+// 所有组件共享这一个 更新队列
+export const updateQueue = {
+  updates: [], // 等待更新队列
+  isBatchUpdate: false, // 是否异步更新，默认 false
+  add(update) {
+    // 向更新队列添加 一个 需要更新后的状态
+    this.updates.push(update);
+  },
+  batchUpdate() {
+    // 开始批量更新，调用 updateComponent()
+    this.updates.forEach((update) => update.updateComponent());
+  },
+};
+
+/**
+ * 更新器
+ */
+class Updater {
+  constructor(classInstance) {
+    this.classInstance = classInstance; // 当前类组件的实例
+    this.pendingState = []; // 等待更新的队列
+  }
+
+  /**
+   *
+   * @param {Object|Function} update 需要更新的state
+   */
+  addState(update) {
+    this.pendingState.push(update);
+
+    // 判断是否需要 异步更新(合并更新) 异步更新需要将 this 传进去 updateQueue.add(this)
+    updateQueue.isBatchUpdate ? updateQueue.add(this) : this.updateComponent();
+
+    // 同步更新相当于直接调用 updateComponent()
+    // this.updateComponent();
+  }
+
+  /**
+   * 更新组件
+   */
+  updateComponent() {
+    // 如果等待更新的队列有值则开始进行更新
+    if (this.pendingState.length) {
+      this.classInstance.state = this.getState();
+      const renderVdom = this.classInstance.render();
+      forceUpdate(this.classInstance, renderVdom);
+    }
+  }
+
+  /**
+   * 合并更新state
+   * @returns 批量更新后的 state
+   */
+  getState() {
+    let { state } = this.classInstance;
+
+    this.pendingState.forEach((nextState) => {
+      // 如果setState 传入的是一个方法，则需要将上一次的 state值传入；
+      if (isFunction(nextState)) {
+        nextState = { ...state, ...nextState(state) };
+      }
+      state = { ...state, ...nextState };
+    });
+
+    return state;
+  }
+}
+
+/**
+ * 强制更新组件
+ * @param {Object} classInstance 类组件实例对象
+ * @param {Object} vdom 虚拟dom
+ */
+function forceUpdate(classInstance, renderVdom) {
+  const oldDom = classInstance.dom;
+  const newDom = createDOM(renderVdom);
+  oldDom.parentNode.replaceChild(newDom, oldDom);
+
+  classInstance.dom = newDom;
+}
 
 class Component {
   // 通过该属性来标记类组件和函数式组件
@@ -7,34 +90,19 @@ class Component {
   constructor(props) {
     this.props = props;
     this.state = {};
+
+    // 每个组件都配一个 Updater
+    this.update = new Updater(this);
   }
 
   /**
-   * 更新state(同步更新)
-   * 1. 更新 state
-   * 2. 调用子组件的 render 方法，得到 vdom
-   * 3. 调用 [updateClassInstance] 更新dom
+   * 更新state
+   * 将需要更新的状态添加到 update 中
    * @param {Object|Function} partialState 需要更新的state
    */
   setState(partialState) {
-    this.state = { ...this.state, ...partialState };
-    const renderVdom = this.render();
-    updateClassInstance(this, renderVdom);
+    this.update.addState(partialState);
   }
-}
-
-/**
- * 更新 dom
- * 1. 通过 createDOM 创建新的 真实dom
- * 2. 通过之前在类实例添加的 dom 属性，可以找到旧的 dom，然后找到其父节点，将其子节点替换成 新的真实dom，此处只是简单的替换，真实的 diff 算法替换会比这复杂得多
- * 3. 重新将 dom 属性修改为当前最新的 真实dom
- * @param {Object} classInstance 类组件实例对象
- * @param {Object} vdom 虚拟dom
- */
-function updateClassInstance(classInstance, vdom) {
-  const dom = createDOM(vdom);
-  classInstance.dom.parentNode.replaceChildren(dom);
-  classInstance.dom = dom;
 }
 
 export default Component;
