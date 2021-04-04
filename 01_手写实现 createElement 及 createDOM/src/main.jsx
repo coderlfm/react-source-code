@@ -1,40 +1,22 @@
 import React, { createElement } from "./react";
 import ReactDOM from "./react-dom";
 
+function Welcome(props) {
+  return <h1>{props.title}</h1>;
+}
+
 /**
- * 当前我们创建一个h1 元素，字体颜色为红色
- * 第一个子元素是 span， 内容是 hello
- * 第二个子元素是 字符串，内容是 'react'
- */
-const element = createElement(
-  "h1",
+  <Welcome title="react" /> 会默认转成 成 type：函数名，props为 组件上的属性，children 会组件，如果没有则为 undefined
   {
-    style: {
-      color: "red",
+    props: {
+      "title": "react",
     },
-  },
-  createElement("span", null, "hello"),
-  "react"
-);
+    type: Welcome(props)
+  }
+ */
+const element = <Welcome title="react 函数式组件" />;
 
-// const element = {
-//   type: "h1",
-//   props: {
-//     style: {
-//       color: "red",
-//     },
-//     children: [
-//       {
-//         type: "span",
-//         props: {
-//           children: "hello",
-//         },
-//       },
-//       "react",
-//     ],
-//   },
-// };
-
-// console.log(JSON.stringify(element, null, 2));
+// console.log("element:", element);
+// console.log("element:", JSON.stringify(element.type, null, 2));
 
 ReactDOM.render(element, document.getElementById("root"));

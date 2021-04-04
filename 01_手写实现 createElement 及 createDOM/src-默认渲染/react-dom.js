@@ -28,16 +28,10 @@ function createDOM(vdom) {
   // 3. 以上都不是，则 children 是一个元素
   const { type, props } = vdom;
 
-  // 3.1 vdom 是一个 函数组件， 例如：<Welcome  />
-  if (typeof vdom.type === "function") {
-    // 3.1.1 直接通过 [updateFunctionComponent] 来生成真实 dom
-    return updateFunctionComponent(vdom);
-  }
-
-  // 3.2.1 vdom 是一个 原生元素 通过 React.createElement 创建的
+  // console.log("props:", props);
   const dom = document.createElement(type);
 
-  // 3.2.2 将属性挂载到元素上
+  // 3.1 将属性挂载到元素上
   updateProps(dom, props);
 
   // 4. 渲染 props.children
@@ -61,20 +55,6 @@ function createDOM(vdom) {
     reconcileChilren(props.children, dom);
   }
 
-  return dom;
-}
-
-/**
- * 函数组件创建真实 dom
- * 如果函数式组件返回的不是原生元素，也会递归调用 createDOM
- * @param {Object} vdom 创建dom
- * @param {Function} vdom.type  元素类型，函数
- * @param {Object} vdom.props 元素属性
- * @returns 真实 dom
- */
-function updateFunctionComponent(vdom) {
-  const { type, props } = vdom;
-  const dom = createDOM(type(props));
   return dom;
 }
 
