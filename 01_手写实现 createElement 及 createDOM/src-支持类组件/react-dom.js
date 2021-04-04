@@ -20,7 +20,7 @@ function render(vdom, container) {
  * @param {Object} vdom.props 元素属性
  * @param {(String|ClassComponent)} vdom.type  元素类型
  */
-export function createDOM(vdom) {
+function createDOM(vdom) {
   // 1. 如果 vdom 是字符串或者数字，则创建一个文本节点
   if (typeof vdom === "string" || typeof vdom === "number") {
     return document.createTextNode(vdom);
@@ -136,12 +136,7 @@ function updateProps(dom, props) {
         dom.style[key] = styleObj[key]; // div.style.color = 'color'
       }
 
-      // 3. 如果属性是以 on 开头的，则为事件处理函数
-    } else if (key.startsWith("on")) {
-      // 给 dom 绑定事件需要为小写 div.onclick
-      dom[key.toLocaleLowerCase()] = props[key];
-
-      // 4. 如果是其它的，则直接添加
+      // 3. 如果是其它的，则直接添加
     } else {
       dom[key] = props[key];
     }
