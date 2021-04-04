@@ -1,5 +1,3 @@
-import Component from "./component";
-
 /**
  * 创建元素
  * @param {String} type 元素类型
@@ -23,7 +21,6 @@ export function createElement(type, config, children) {
 
 const React = {
   createElement,
-  Component,
 };
 
 export default React;

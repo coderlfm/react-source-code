@@ -9,16 +9,10 @@ function render(vdom, container) {
 }
 
 /**
- * 函数组件和类组件
- * @typedef {Class} ClassComponent
- * @property  {Boolean} [isReactComponent]  是否类组件，可选参数
- */
-
-/**
  * 创建真实dom
  * @param {Object} vdom 创建dom
+ * @param {String} vdom.type  元素类型
  * @param {Object} vdom.props 元素属性
- * @param {(String|ClassComponent)} vdom.type  元素类型
  */
 function createDOM(vdom) {
   // 1. 如果 vdom 是字符串或者数字，则创建一个文本节点
@@ -34,14 +28,9 @@ function createDOM(vdom) {
   // 3. 以上都不是，则 children 是一个元素
   const { type, props } = vdom;
 
-  // 3.1 vdom 是一个 类组件组件， 通过 isReactComponent 来判断
-  if (typeof vdom.type === "function" && vdom.type.isReactComponent) {
-    return updateClassComponent(vdom);
-  }
-
-  // 3.2 vdom 是一个 函数组件， 例如：<Welcome  />
+  // 3.1 vdom 是一个 函数组件， 例如：<Welcome  />
   if (typeof vdom.type === "function") {
-    // 3.2.1 直接通过 [updateFunctionComponent] 来生成真实 dom
+    // 3.1.1 直接通过 [updateFunctionComponent] 来生成真实 dom
     return updateFunctionComponent(vdom);
   }
 
@@ -76,29 +65,9 @@ function createDOM(vdom) {
 }
 
 /**
- * 类组件创建真实 dom
- * 1. new 一个组件的实例
- * 2. 调用 实例的 render 方法得到 vdom(虚拟dom)
- * 3. 调用 [createDOM] 将 vdom 传入，得到真实 dom
- * @param {Object} vdom 虚拟dom
- * @param {ClassComponent}  vdom.type 元素类型，类
- * @param {Object} vdom.props 元素属性
- */
-function updateClassComponent(vdom) {
-  const { type, props } = vdom;
-  const classInstance = new type(props);
-  const classInstanceVdom = classInstance.render();
-  const dom = createDOM(classInstanceVdom);
-
-  // 此处将真实 dom 添加到 类组件 的实例身上，在 setState 进行组件数据更新时需要用的
-  classInstance.dom = dom;
-  return dom;
-}
-
-/**
  * 函数组件创建真实 dom
  * 如果函数式组件返回的不是原生元素，也会递归调用 createDOM
- * @param {Object} vdom 虚拟dom
+ * @param {Object} vdom 创建dom
  * @param {Function} vdom.type  元素类型，函数
  * @param {Object} vdom.props 元素属性
  * @returns 真实 dom
