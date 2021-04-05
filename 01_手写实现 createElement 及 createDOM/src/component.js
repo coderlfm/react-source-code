@@ -4,17 +4,17 @@ import { createDOM } from "./react-dom.js";
 // 更新队列，全局单例
 // 所有组件共享这一个 更新队列
 export const updateQueue = {
-  updates: [], // 等待更新队列
+  updates: new Set(), // 等待更新队列
   isBatchUpdate: false, // 是否异步更新，默认 false
   add(update) {
     // 向更新队列添加 一个 需要更新后的状态
-    this.updates.push(update);
+    this.updates.add(update);
   },
   batchUpdate() {
     // 开始批量更新，调用 updateComponent()
     this.updates.forEach((update) => update.updateComponent());
     this.isBatchUpdate = false;
-    this.updates.length = 0;
+    this.updates.clear();
   },
 };
 
