@@ -39,8 +39,8 @@ function dispatchEvent(nativeEvent) {
   // . 创建合成事件对象
   synthesisEvent = createSynthesisEvent(nativeEvent);
 
-  // . 取出事件对象，将 合成事件对象 传入
-  store[type].call(target, synthesisEvent);
+  // . 判断是否有 store，有则调用方法，避免点击 空白处报错， 取出事件对象，将 合成事件对象 传入
+  store && store[type].call(target, synthesisEvent);
 
   // . 执行更新
   updateQueue.batchUpdate();
