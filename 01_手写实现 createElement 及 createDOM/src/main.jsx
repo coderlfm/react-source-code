@@ -10,12 +10,18 @@ class Counter extends React.Component {
   /**
    * 同步更新
    */
-  increment = () => {
+  increment = (event) => {
     this.setState({ count: this.state.count + 1 });
     console.log(this.state.count);
 
     this.setState({ count: this.state.count + 1 });
     console.log(this.state.count);
+    
+    console.log("event:", event);
+
+    setTimeout(() => {
+      console.log("setTimeout event:", event);
+    });
   };
 
   /**

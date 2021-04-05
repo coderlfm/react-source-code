@@ -1,3 +1,5 @@
+import { addEvent } from "./event";
+
 /**
  * 渲染元素
  * @param {Object} vdom 虚拟dom
@@ -139,7 +141,10 @@ function updateProps(dom, props) {
       // 3. 如果属性是以 on 开头的，则为事件处理函数
     } else if (key.startsWith("on")) {
       // 给 dom 绑定事件需要为小写 div.onclick
-      dom[key.toLocaleLowerCase()] = props[key];
+      // dom[key.toLocaleLowerCase()] = props[key];
+
+      // 使用事件合成来添加事件
+      addEvent(dom, key.toLocaleLowerCase(), props[key]);
 
       // 4. 如果是其它的，则直接添加
     } else {
