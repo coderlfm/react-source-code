@@ -7,7 +7,15 @@ class Counter extends React.Component {
   };
 
   /**
-   * 同步更新
+   * div 点击事件
+   * @param {*} event
+   */
+  handleDivClick = (event) => {
+    console.log("div 发生点击(冒泡)");
+  };
+
+  /**
+   * 同步更新 - 当前已经是异步更新了，内部实现了合成事件
    */
   increment = (event) => {
     this.setState({ count: this.state.count + 1 });
@@ -15,7 +23,7 @@ class Counter extends React.Component {
 
     this.setState({ count: this.state.count + 1 });
     console.log(this.state.count);
-    
+
     console.log("event:", event);
 
     setTimeout(() => {
@@ -27,7 +35,6 @@ class Counter extends React.Component {
    * 异步更新(自动动)
    */
   incrementAsync = () => {
-
     this.setState({ count: this.state.count + 1 });
     console.log(this.state.count);
 
@@ -35,12 +42,11 @@ class Counter extends React.Component {
     console.log(this.state.count);
 
     // this.setState((prevState) => ({ count: prevState.count + 1 }));
-
   };
 
   render() {
     return (
-      <div>
+      <div onClick={this.handleDivClick}>
         {this.state.count}
         <br />
         <button onClick={this.increment}>同步更新+</button>
