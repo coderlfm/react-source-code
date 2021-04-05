@@ -1,6 +1,5 @@
 import React, { createElement } from "./react";
 import ReactDOM from "./react-dom";
-import { updateQueue } from "./component";
 
 class Counter extends React.Component {
   state = {
@@ -25,14 +24,9 @@ class Counter extends React.Component {
   };
 
   /**
-   * 异步更新(手动)
-   * 1. 将 updateQueue.isBatchUpdate 设为 true
-   * 2. 调用 setState
-   * 3. 调用 updateQueue.batchUpdate() 执行更新
-   * 4. 将 updateQueue.isBatchUpdate 设为 false
+   * 异步更新(自动动)
    */
   incrementAsync = () => {
-    updateQueue.isBatchUpdate = true;
 
     this.setState({ count: this.state.count + 1 });
     console.log(this.state.count);
@@ -42,8 +36,6 @@ class Counter extends React.Component {
 
     // this.setState((prevState) => ({ count: prevState.count + 1 }));
 
-    updateQueue.batchUpdate();
-    updateQueue.isBatchUpdate = false;
   };
 
   render() {

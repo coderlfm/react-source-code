@@ -1,3 +1,5 @@
+import { updateQueue } from "./component";
+
 /**
  * 合成事件
  * @param {*} dom dom元素
@@ -31,15 +33,22 @@ function dispatchEvent(nativeEvent) {
   // . 从 事件目标中 取出 store
   const { store } = target;
 
+  // . 将 updateQueue.isBatchUpdate 设为 true 设置为异步更新
+  updateQueue.isBatchUpdate = true;
+  
   // . 创建合成事件对象
   synthesisEvent = createSynthesisEvent(nativeEvent);
 
   // . 取出事件对象，将 合成事件对象 传入
   store[type].call(target, synthesisEvent);
 
+  // . 执行更新
+  updateQueue.batchUpdate();
+
   // . 清空 合成事件对象
   clearSynthesisEvent(synthesisEvent);
-  
+
+
   // console.log("event：", synthesisEvent);
 }
 
