@@ -13,6 +13,8 @@ export const updateQueue = {
   batchUpdate() {
     // 开始批量更新，调用 updateComponent()
     this.updates.forEach((update) => update.updateComponent());
+    this.isBatchUpdate = false;
+    this.updates.length = 0;
   },
 };
 
