@@ -154,3 +154,9 @@ const element = <Counter> </Counter>;
 ReactDOM.render(element, document.getElementById("root"));
 
 ```
+
+## 废弃的生命周期
+fiber 出现后，更新是可以被打断的，所以可能会出现 开始 - 暂停 ，开始 - 暂停，会触发多次
+- `willReceiveProps`
+- `willMound`
+- `willUpdate`

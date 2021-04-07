@@ -47,22 +47,7 @@ class Updater {
   updateComponent() {
     // 如果等待更新的队列有值则开始进行更新
     if (this.pendingState.length) {
-      // 此处无论组件重不重新渲染， state已经改变为最新的值了
-      this.classInstance.state = this.getState();
-
-      // 此处暂时将旧的 props 传入
-      const props = this.classInstance.props;
-
-      // 实现 shouldComponentUpdate() 是否需要重新渲染
-      if (
-        this.classInstance.shouldComponentUpdate &&
-        !this.classInstance.shouldComponentUpdate(props, this.classInstance.state)
-      ) {
-        return;
-      }
-
-      const renderVdom = this.classInstance.render();
-      forceUpdate(this.classInstance, renderVdom);
+      sholdUpdate(this.classInstance);
     }
   }
 
@@ -92,16 +77,21 @@ class Updater {
 }
 
 /**
- * 强制更新组件
- * @param {Object} classInstance 类组件实例对象
- * @param {Object} vdom 虚拟dom
+ * 组件是否需要更新
+ * @param {*} classInstance 组件实例
+ * @returns
  */
-function forceUpdate(classInstance, renderVdom) {
-  const oldDom = classInstance.dom;
-  const newDom = createDOM(renderVdom);
-  oldDom.parentNode.replaceChild(newDom, oldDom);
+function sholdUpdate(classInstance) {
+  // 此处无论组件重不重新渲染， state已经改变为最新的值了
+  const nextState = (classInstance.state = classInstance.update.getState());
 
-  classInstance.dom = newDom;
+  // 实现 shouldComponentUpdate() 是否需要重新渲染  此处暂时将旧的 props 传入，实际需要传入 nextProps
+  if (classInstance.shouldComponentUpdate && !classInstance.shouldComponentUpdate(classInstance.props, nextState)) {
+    return;
+  }
+
+  // 组件开始更新
+  classInstance.forceUpdate();
 }
 
 class Component {
@@ -124,6 +114,34 @@ class Component {
   setState(partialState) {
     this.update.addState(partialState);
   }
+
+  /**
+   * 强制更新组件
+   */
+  forceUpdate() {
+    // 组件即将更新
+    const renderVdom = this.render();
+    updateClassComponent(this, renderVdom);
+  }
+}
+
+/**
+ * 更新类组件
+ * @param {*} classInstance 类组件实例
+ * @param {*} vdom 虚拟 dom
+ */
+function updateClassComponent(classInstance, vdom) {
+  // 组件即将更新
+  classInstance.componentWillUpdate && classInstance.componentWillUpdate();
+
+  const oldDom = classInstance.dom;
+  const newDom = createDOM(vdom);
+  oldDom.parentNode.replaceChild(newDom, oldDom);
+
+  classInstance.dom = newDom;
+
+  // 实现 组件更新完毕
+  classInstance.componentDidUpdate && classInstance.componentDidUpdate();
 }
 
 export default Component;
