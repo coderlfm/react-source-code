@@ -48,21 +48,24 @@ class Updater {
     // 如果等待更新的队列有值则开始进行更新
     if (this.pendingState.length) {
       // 此处无论组件重不重新渲染， state已经改变为最新的值了
-      this.classInstance.state = this.getState();
+      const nextState = (this.classInstance.state = this.getState());
 
-      // 此处暂时将旧的 props 传入
+      // 此处暂时将旧的 props 传入，实际需要传入 nextProps
       const props = this.classInstance.props;
 
       // 实现 shouldComponentUpdate() 是否需要重新渲染
-      if (
-        this.classInstance.shouldComponentUpdate &&
-        !this.classInstance.shouldComponentUpdate(props, this.classInstance.state)
-      ) {
+      if (this.classInstance.shouldComponentUpdate && !this.classInstance.shouldComponentUpdate(props, nextState)) {
         return;
       }
 
+      // 实现 组件即将更新
+      this.classInstance.componentWillUpdate && this.classInstance.componentWillUpdate(props, nextState);
+
       const renderVdom = this.classInstance.render();
       forceUpdate(this.classInstance, renderVdom);
+
+      // 实现 组件更新完毕
+      this.classInstance.componentDidUpdate && this.classInstance.componentDidUpdate(props, nextState);
     }
   }
 
