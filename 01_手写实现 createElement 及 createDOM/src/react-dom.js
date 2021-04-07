@@ -21,6 +21,8 @@ function render(vdom, container) {
  * @param {Object} vdom 创建dom
  * @param {Object} vdom.props 元素属性
  * @param {(String|ClassComponent)} vdom.type  元素类型
+ * @param {Object} [vdom.ref]  元素ref
+ * @param {null} vdom.ref.current  元素ref current
  */
 export function createDOM(vdom) {
   // 1. 如果 vdom 是字符串或者数字，则创建一个文本节点
@@ -34,17 +36,17 @@ export function createDOM(vdom) {
   }
 
   // 3. 以上都不是，则 children 是一个元素
-  const { type, props } = vdom;
+  const { type, props, ref } = vdom;
 
-  // 3.1 vdom 是一个 类组件组件， 通过 isReactComponent 来判断
-  if (typeof vdom.type === "function" && vdom.type.isReactComponent) {
-    return updateClassComponent(vdom);
-  }
-
-  // 3.2 vdom 是一个 函数组件， 例如：<Welcome  />
   if (typeof vdom.type === "function") {
-    // 3.2.1 直接通过 [updateFunctionComponent] 来生成真实 dom
-    return updateFunctionComponent(vdom);
+    // 3.1 vdom 是一个 类组件组件， 通过 isReactComponent 来判断
+    if (vdom.type.isReactComponent) {
+      return updateClassComponent(vdom);
+      // 3.2 vdom 是一个 函数组件， 例如：<Welcome  />
+    } else {
+      // 3.2.1 直接通过 [updateFunctionComponent] 来生成真实 dom
+      return updateFunctionComponent(vdom);
+    }
   }
 
   // 3.2.1 vdom 是一个 原生元素 通过 React.createElement 创建的
@@ -72,6 +74,10 @@ export function createDOM(vdom) {
   // 4.3 props.children 是一个数组，则表示有多个子元素
   if (Array.isArray(props.children)) {
     reconcileChilren(props.children, dom);
+  }
+
+  if (ref) {
+    ref.current = dom;
   }
 
   return dom;
@@ -145,8 +151,10 @@ function updateProps(dom, props) {
 
       // 使用事件合成来添加事件
       addEvent(dom, key.toLocaleLowerCase(), props[key]);
-
-      // 4. 如果是其它的，则直接添加
+      // 4. 如果是 ref 则跳过
+    } else if (key === "ref") {
+      continue;
+      // 5. 如果是其它的，则直接添加
     } else {
       dom[key] = props[key];
     }

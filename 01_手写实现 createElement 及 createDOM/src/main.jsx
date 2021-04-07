@@ -1,7 +1,13 @@
-import React, { createElement } from "./react";
+import React, { createRef } from "./react";
 import ReactDOM from "./react-dom";
 
 class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.ref = createRef();
+  }
+
   state = {
     count: 0,
   };
@@ -44,6 +50,13 @@ class Counter extends React.Component {
     // this.setState((prevState) => ({ count: prevState.count + 1 }));
   };
 
+  /**
+   * 打印ref
+   */
+  handleGetRef = () => {
+    console.log("ref:", this.ref);
+  };
+
   render() {
     return (
       <div onClick={this.handleDivClick}>
@@ -52,6 +65,11 @@ class Counter extends React.Component {
         <button onClick={this.increment}>同步更新+</button>
         <br />
         <button onClick={this.incrementAsync}>异步更新+</button>
+        <br />
+
+        <button onClick={this.handleGetRef} ref={this.ref}>
+          获取元素 ref
+        </button>
       </div>
     );
   }
