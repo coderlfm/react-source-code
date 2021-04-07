@@ -1,5 +1,5 @@
-import { isFunction } from "../utils/index.js";
-import { createDOM } from "./react-dom.js";
+import { isFunction } from '../utils/index.js';
+import { createDOM } from './react-dom.js';
 
 // 更新队列，全局单例
 // 所有组件共享这一个 更新队列
@@ -12,7 +12,7 @@ export const updateQueue = {
   },
   batchUpdate() {
     // 开始批量更新，调用 updateComponent()
-    this.updates.forEach((update) => update.updateComponent());
+    this.updates.forEach(update => update.updateComponent());
     this.isBatchUpdate = false;
     this.updates.clear();
   },
@@ -47,7 +47,20 @@ class Updater {
   updateComponent() {
     // 如果等待更新的队列有值则开始进行更新
     if (this.pendingState.length) {
+      // 此处无论组件重不重新渲染， state已经改变为最新的值了
       this.classInstance.state = this.getState();
+
+      // 此处暂时将旧的 props 传入
+      const props = this.classInstance.props;
+
+      // 实现 shouldComponentUpdate() 是否需要重新渲染
+      if (
+        this.classInstance.shouldComponentUpdate &&
+        !this.classInstance.shouldComponentUpdate(props, this.classInstance.state)
+      ) {
+        return;
+      }
+
       const renderVdom = this.classInstance.render();
       forceUpdate(this.classInstance, renderVdom);
     }
@@ -60,12 +73,18 @@ class Updater {
   getState() {
     let { state } = this.classInstance;
 
-    this.pendingState.forEach((nextState) => {
+    this.pendingState.forEach(nextState => {
       // 如果setState 传入的是一个方法，则需要将上一次的 state值传入；
       if (isFunction(nextState)) {
-        nextState = { ...state, ...nextState(state) };
+        nextState = {
+          ...state,
+          ...nextState(state),
+        };
       }
-      state = { ...state, ...nextState };
+      state = {
+        ...state,
+        ...nextState,
+      };
     });
 
     return state;

@@ -41,6 +41,10 @@ class Counter extends React.Component {
     console.log("3. 组件挂载完毕");
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.count % 2 !== 0;
+  }
+
   render() {
     console.log("2. 组件 render()");
     return (

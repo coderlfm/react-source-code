@@ -1,4 +1,4 @@
-import { addEvent } from "./event";
+import { addEvent } from './event';
 
 /**
  * 渲染元素
@@ -26,19 +26,19 @@ function render(vdom, container) {
  */
 export function createDOM(vdom) {
   // 1. 如果 vdom 是字符串或者数字，则创建一个文本节点
-  if (typeof vdom === "string" || typeof vdom === "number") {
+  if (typeof vdom === 'string' || typeof vdom === 'number') {
     return document.createTextNode(vdom);
   }
 
   // 2. 如果 vdom 是 null 或者 undefined 则返回空串
   if (!vdom) {
-    return "";
+    return '';
   }
 
   // 3. 以上都不是，则 children 是一个元素
   const { type, props, ref } = vdom;
 
-  if (typeof vdom.type === "function") {
+  if (typeof vdom.type === 'function') {
     // 3.1 vdom 是一个 类组件组件， 通过 isReactComponent 来判断
     if (vdom.type.isReactComponent) {
       return updateClassComponent(vdom);
@@ -58,16 +58,13 @@ export function createDOM(vdom) {
   // 4. 渲染 props.children
 
   // 4.1 props.children 是字符串或者数字，则创建一个文本节点
-  if (
-    typeof props.children === "string" ||
-    typeof props.children === "number"
-  ) {
+  if (typeof props.children === 'string' || typeof props.children === 'number') {
     dom.textContent = props.children;
     // dom.appendChild(document.createTextNode(props.children));
   }
 
   // 4.2 props.children 只有一个子元素，则直接递归调用 render 来创建子元素
-  if (typeof props.children === "object" && props.type) {
+  if (typeof props.children === 'object' && props.type) {
     render(props.children, dom);
   }
 
@@ -146,25 +143,25 @@ function reconcileChilren(childernVdom, container) {
 function updateProps(dom, props) {
   for (let key in props) {
     // 1. 如果是 chilren 则跳过，需要单独处理
-    if (key === "children") {
+    if (key === 'children') {
       continue;
 
       // 2. 如果是样式，则遍历添加上去
-    } else if (key === "style") {
+    } else if (key === 'style') {
       const styleObj = props[key];
       for (let key in styleObj) {
         dom.style[key] = styleObj[key]; // div.style.color = 'color'
       }
 
       // 3. 如果属性是以 on 开头的，则为事件处理函数
-    } else if (key.startsWith("on")) {
+    } else if (key.startsWith('on')) {
       // 给 dom 绑定事件需要为小写 div.onclick
       // dom[key.toLocaleLowerCase()] = props[key];
 
       // 使用事件合成来添加事件
       addEvent(dom, key.toLocaleLowerCase(), props[key]);
       // 4. 如果是 ref 则跳过
-    } else if (key === "ref") {
+    } else if (key === 'ref') {
       continue;
       // 5. 如果是其它的，则直接添加
     } else {
