@@ -4,6 +4,8 @@ import ReactDOM from "./react-dom";
 class Counter extends React.Component {
   constructor(props) {
     super(props);
+
+    this.ref = createRef();
   }
 
   state = {
@@ -24,6 +26,28 @@ class Counter extends React.Component {
   increment = (event) => {
     this.setState({ count: this.state.count + 1 });
     console.log(this.state.count);
+
+    this.setState({ count: this.state.count + 1 });
+    console.log(this.state.count);
+
+    console.log("event:", event);
+
+    setTimeout(() => {
+      console.log("setTimeout event:", event);
+    });
+  };
+
+  /**
+   * 异步更新(自动动)
+   */
+  incrementAsync = () => {
+    this.setState({ count: this.state.count + 1 });
+    console.log(this.state.count);
+
+    this.setState({ count: this.state.count + 1 });
+    console.log(this.state.count);
+
+    // this.setState((prevState) => ({ count: prevState.count + 1 }));
   };
 
   /**
@@ -33,22 +57,19 @@ class Counter extends React.Component {
     console.log("ref:", this.ref);
   };
 
-  componentWillMount() {
-    console.log("1. 组件即将挂载");
-  }
-
-  componentDidMount() {
-    console.log("3. 组件挂载完毕");
-  }
-
   render() {
-    console.log("2. 组件 render()");
     return (
       <div onClick={this.handleDivClick}>
         {this.state.count}
         <br />
-        <button onClick={this.increment}>更新+</button>
+        <button onClick={this.increment}>同步更新+</button>
         <br />
+        <button onClick={this.incrementAsync}>异步更新+</button>
+        <br />
+
+        <button onClick={this.handleGetRef} ref={this.ref}>
+          获取元素 ref
+        </button>
       </div>
     );
   }

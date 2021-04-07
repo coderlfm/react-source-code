@@ -95,23 +95,11 @@ export function createDOM(vdom) {
 function updateClassComponent(vdom) {
   const { type, props } = vdom;
   const classInstance = new type(props);
-
-  // 组件即将挂载
-  if (classInstance.componentWillMount) {
-    classInstance.componentWillMount();
-  }
-
   const classInstanceVdom = classInstance.render();
   const dom = createDOM(classInstanceVdom);
 
   // 此处将真实 dom 添加到 类组件 的实例身上，在 setState 进行组件数据更新时需要用的
   classInstance.dom = dom;
-
-  // 组件挂载完毕，此逻辑应该在 dom.appendChild 中再调用
-  if (classInstance.componentDidMount) {
-    classInstance.componentDidMount();
-  }
-
   return dom;
 }
 
