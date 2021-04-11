@@ -34,11 +34,17 @@ class Updater {
   addState(update) {
     this.pendingState.push(update);
 
-    // 判断是否需要 异步更新(合并更新) 异步更新需要将 this 传进去 updateQueue.add(this)
-    updateQueue.isBatchUpdate ? updateQueue.add(this) : this.updateComponent();
-
     // 同步更新相当于直接调用 updateComponent()
     // this.updateComponent();
+    this.emitUpdate();
+  }
+
+  /**
+   * 发出更新
+   */
+  emitUpdate() {
+    // 判断是否需要 异步更新(合并更新) 异步更新需要将 this 传进去 updateQueue.add(this)
+    updateQueue.isBatchUpdate ? updateQueue.add(this) : this.updateComponent();
   }
 
   /**
@@ -119,7 +125,6 @@ class Component {
    * 强制更新组件
    */
   forceUpdate() {
-    // 组件即将更新
     const renderVdom = this.render();
     updateClassComponent(this, renderVdom);
   }

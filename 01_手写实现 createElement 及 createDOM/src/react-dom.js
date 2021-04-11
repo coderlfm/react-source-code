@@ -64,7 +64,7 @@ export function createDOM(vdom) {
   }
 
   // 4.2 props.children 只有一个子元素，则直接递归调用 render 来创建子元素
-  if (typeof props.children === 'object' && props.type) {
+  if (typeof props.children === 'object' && props.children.type) {
     render(props.children, dom);
   }
 
