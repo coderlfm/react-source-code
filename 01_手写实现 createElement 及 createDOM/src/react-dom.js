@@ -185,9 +185,10 @@ function updateProps(dom, oldProps, newProps) {
  * @param {*} parentDom 父节点
  * @param {*} oldVdom 旧的dom
  * @param {*} newVdom 新的dom
+ * @param {*} nextDom 当前dom 的后一个dom
  * @returns {*} 新的vdom
  */
-export function compareTwoVdom(parentDom, oldVdom, newVdom) {
+export function compareTwoVdom(parentDom, oldVdom, newVdom, nextDom) {
   // console.log(oldVdom, newVdom);
   // console.log(oldVdom.classInstance);
   // debugger;
@@ -201,7 +202,14 @@ export function compareTwoVdom(parentDom, oldVdom, newVdom) {
     const dom = createDOM(newVdom);
     newVdom.dom = dom;
     // 暂时使用该方式插入
-    parentDom.appendChild(dom);
+    // parentDom.appendChild(dom);
+
+    if (nextDom) {
+      parentDom.insertBefore(dom, nextDom);
+    } else {
+      parentDom.appendChild(dom);
+    }
+
     return newVdom;
 
     // 3.如果老的有，新的没有
@@ -318,7 +326,9 @@ function updateChildren(parentDom, oldChildren, newChildren) {
   // debugger;
   for (let index = 0; index < maxLength; index++) {
     // const element = maxLength[index];
-    compareTwoVdom(parentDom, oldChildren[index], newChildren[index]);
+    // 在旧的 vdom 身上查找 当前 [index] 的vdom 是否有下一个 dom，有的话需要在这一步查找出来
+    const nextDom = oldChildren.find((item, itemIndex) => item && itemIndex > index && item.type);
+    compareTwoVdom(parentDom, oldChildren[index], newChildren[index], nextDom && nextDom.dom);
   }
 }
 
