@@ -11,14 +11,6 @@ class Counter extends React.Component {
   };
 
   /**
-   * div 点击事件
-   * @param {*} event
-   */
-  handleDivClick = event => {
-    // console.log('div 发生点击(冒泡)');
-  };
-
-  /**
    * 同步更新 - 当前已经是异步更新了，内部实现了合成事件
    */
   increment = event => {
@@ -26,23 +18,14 @@ class Counter extends React.Component {
     this.setState({ count: this.state.count + 1 });
   };
 
-
-
-  shouldComponentUpdate(nextProps, nextState) {
-    // console.log('4. 是否需要更新 shouldComponentUpdate');
-    return true;
-    return this.state.count % 2 === 0;
-  }
-
   render() {
-    console.log('2. 组件 render()');
+    // console.log('2. 组件 render()');
     // console.log(this.state.count, this.state.count % 2 !== 0);
 
     return (
-      <div onClick={this.handleDivClick}>
+      <div>
         <p>{this.state.count}</p>
-        <br />
-        {this.state.count % 2 === 0 ? <ChildrenCount propsCount={this.state.count} /> : null} 
+        <ChildrenCount propsCount={this.state.count} />
         <br />
         <button onClick={this.increment}>更新+</button>
       </div>
@@ -52,11 +35,22 @@ class Counter extends React.Component {
 
 class ChildrenCount extends React.Component {
 
+  state = {
+    number:1
+  }
+  
+  static getDerivedStateFromProps(props, state) {
+    console.log(props, state);
+    const { propsCount } = props;
+
+    return { number: propsCount % 2 === 0 ? propsCount * 2 : propsCount * 3 };
+    return null;
+  }
+  
   render() {
-    console.log('2. 子组件 render()');
     return (
       <div id='children-count'>
-        <h2>{this.props.propsCount}</h2>
+        <h2>{this.state.number}</h2>
       </div>
     );
   }

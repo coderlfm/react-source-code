@@ -47,7 +47,7 @@ class Updater {
     this.nextProps = nextProps;
 
     // 判断是否需要 异步更新(合并更新) 异步更新需要将 this 传进去 updateQueue.add(this)
-    nextProps || updateQueue.isBatchUpdate ? updateQueue.add(this) : this.updateComponent();
+    nextProps || !updateQueue.isBatchUpdate ? this.updateComponent() : updateQueue.add(this);
   }
 
   /**
@@ -135,50 +135,26 @@ class Component {
     // 组件即将更新
     this.componentWillUpdate && this.componentWillUpdate();
 
+    // debugger;
+
+    // 实现 getDerivedStateFromProps 生命周期
+    if (this.onwVdom.type.getDerivedStateFromProps) {
+      const { children, ...props } = this.props;
+      const newState = this.onwVdom.type.getDerivedStateFromProps(props, this.state);
+      newState && (this.state = newState);
+    }
+    // debugger;
     //
     const oldVdom = this.oldVdom;
     const newVdom = this.render();
 
     const currentVdom = compareTwoVdom(oldVdom.dom.parentNode, oldVdom, newVdom);
 
-    // const newDom = createDOM(currentVdom);
-
-    // const oldDom = this.dom;
-
-    // oldDom.parentNode.replaceChild(newDom, oldDom);
-
     this.oldVdom = currentVdom;
     this.componentDidUpdate && this.componentDidUpdate();
 
     // updateClassComponent(this, renderVdom);
   }
-}
-
-/**
- * 更新类组件
- * @param {*} classInstance 类组件实例
- * @param {*} vdom 虚拟 dom
- */
-function updateClassComponent(classInstance, vdom) {
-  // 取到旧的vdom和新的 vdom，进行比较
-  const oldVdom = classInstance.oldVdom;
-  const newVdom = classInstance.render();
-  const currentVdom = compareTwoVdom(oldVdom.dom.parentNode, oldVdom, newVdom);
-
-  // console.log(currentVdom);
-
-  const oldDom = classInstance.dom;
-  const newDom = createDOM(vdom);
-  // console.log('oldDom:', oldDom);
-  // console.log('newDom:', newDom);
-
-  oldDom.parentNode.replaceChild(newDom, oldDom);
-
-  // debugger;
-  classInstance.dom = newDom;
-
-  // 实现 组件更新完毕
-  classInstance.componentDidUpdate && classInstance.componentDidUpdate();
 }
 
 export default Component;

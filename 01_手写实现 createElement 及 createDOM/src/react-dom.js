@@ -98,6 +98,9 @@ function updateClassComponent(vdom) {
 
   vdom.classInstance = classInstance;
 
+  // 在 类的实例身上记录 类的vdom，后续需要通过 onwVdom.type 来获取类身上的静态方法 
+  classInstance.onwVdom = vdom;
+  
   // 组件即将挂载
   if (classInstance.componentWillMount) {
     classInstance.componentWillMount();
@@ -248,13 +251,13 @@ export function compareTwoVdom(parentDom, oldVdom, newVdom, nextDom) {
  */
 function domDiff(parentDom, oldVdom, newVdom) {
   // debugger;
-  // 说明是原生元素
   if (
     (typeof oldVdom === 'string' && typeof newVdom === 'string') ||
     (typeof oldVdom === 'number' && typeof newVdom === 'number')
   ) {
     if (oldVdom !== newVdom) {
       // parentDom.repliceChild(oldVdom, newVdom);
+      parentDom.repliceChild(newVdom, oldVdom);
       // repli innerText = newVdom;
 
       return;
@@ -266,6 +269,7 @@ function domDiff(parentDom, oldVdom, newVdom) {
   const currentDOM = (newVdom.dom = oldVdom.dom);
   newVdom.classInstance = oldVdom.classInstance;
 
+  // 说明是原生元素
   if (typeof oldVdom.type === 'string') {
     // 更新元素上的属性
     updateProps(currentDOM, oldVdom.props, newVdom.props);
@@ -305,7 +309,7 @@ function updateChildren(parentDom, oldChildren, newChildren) {
   if (!oldChildren && !newChildren) {
     return;
   }
-
+  // debugger;
   // 1. children 是文本或者字符串，则直接覆盖
   if (
     (typeof oldChildren === 'string' && typeof newChildren === 'string') ||
@@ -327,7 +331,7 @@ function updateChildren(parentDom, oldChildren, newChildren) {
   for (let index = 0; index < maxLength; index++) {
     // const element = maxLength[index];
     // 在旧的 vdom 身上查找 当前 [index] 的vdom 是否有下一个 dom，有的话需要在这一步查找出来
-    const nextDom = oldChildren.find((item, itemIndex) => item && itemIndex > index && item.type);
+    const nextDom = oldChildren.find((item, itemIndex) => item && itemIndex > index && item.dom);
     compareTwoVdom(parentDom, oldChildren[index], newChildren[index], nextDom && nextDom.dom);
   }
 }
