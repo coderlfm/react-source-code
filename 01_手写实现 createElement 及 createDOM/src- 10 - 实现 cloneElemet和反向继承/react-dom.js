@@ -41,11 +41,11 @@ export function createDOM(vdom) {
   if (typeof vdom.type === 'function') {
     // 3.1 vdom 是一个 类组件组件， 通过 isReactComponent 来判断
     if (vdom.type.isReactComponent) {
-      return mountClassComponent(vdom);
+      return updateClassComponent(vdom);
       // 3.2 vdom 是一个 函数组件， 例如：<Welcome  />
     } else {
-      // 3.2.1 直接通过 [mountFunctionComponent] 来生成真实 dom
-      return mountFunctionComponent(vdom);
+      // 3.2.1 直接通过 [updateFunctionComponent] 来生成真实 dom
+      return updateFunctionComponent(vdom);
     }
   }
 
@@ -92,15 +92,15 @@ export function createDOM(vdom) {
  * @param {ClassComponent}  vdom.type 元素类型，类
  * @param {Object} vdom.props 元素属性
  */
-function mountClassComponent(vdom) {
+function updateClassComponent(vdom) {
   const { type, props } = vdom;
   const classInstance = new type(props);
 
   vdom.classInstance = classInstance;
 
-  // 在 类的实例身上记录 类的vdom，后续需要通过 ownVdom.type 来获取类身上的静态方法 
-  classInstance.ownVdom = vdom;
-
+  // 在 类的实例身上记录 类的vdom，后续需要通过 onwVdom.type 来获取类身上的静态方法 
+  classInstance.onwVdom = vdom;
+  
   // 组件即将挂载
   if (classInstance.componentWillMount) {
     classInstance.componentWillMount();
@@ -132,11 +132,10 @@ function mountClassComponent(vdom) {
  * @param {Object} vdom.props 元素属性
  * @returns 真实 dom
  */
-function mountFunctionComponent(vdom) {
+function updateFunctionComponent(vdom) {
   const { type, props } = vdom;
-  const renderVdom = type(props);
-  vdom.renderVdom = renderVdom;
-  return createDOM(renderVdom);
+  const dom = createDOM(type(props));
+  return dom;
 }
 
 /**
@@ -221,8 +220,8 @@ export function compareTwoVdom(parentDom, oldVdom, newVdom, nextDom) {
     parentDom.removeChild(oldVdom.dom);
 
     // 这个 oldVdom.classInstance 纠结了很久是怎么获取到的，这里记录一下，在当前例子中，只有childrenCount 才有 classInstance
-    // 1. 在Counter 用 children 创建真实dom的时候，第二个 child 是 类组件，类组件会走到 mountClassComponent() ,并且将该组件的 vdom传进去
-    // 2. mountClassComponent 中给该组件的vdom添加了 vdom.classInstance，可以通过该 vdom 获取该类组件的实例
+    // 1. 在Counter 用 children 创建真实dom的时候，第二个 child 是 类组件，类组件会走到 updateClassComponent() ,并且将该组件的 vdom传进去
+    // 2. updateClassComponent 中给该组件的vdom添加了 vdom.classInstance，可以通过该 vdom 获取该类组件的实例
     // 3. 但是这里却是从 oldVdom 中取的 classInstance，原因是 当从 updateChildren 中调用 compareTwoVdom 时，这个 oldVdom 其实是组件的 Vdom，那组件的Vdom，我们在第二步已经给组件的vdom身上添加了 vdom.classInstance，所以在类组件身上是可以获取的，原生的元素是没有这个属性的
 
     if (oldVdom.classInstance && oldVdom.classInstance.componentWillMount) {
@@ -282,31 +281,9 @@ function domDiff(parentDom, oldVdom, newVdom) {
 
     // 说明是一个组件
   } else if (typeof oldVdom.type === 'function') {
-    if (oldVdom.type.isReactComponent) {
-      // debugger;
-
-      updateClassInstance(oldVdom, newVdom);
-    } else {
-      updateFunction(oldVdom, newVdom);
-    }
+    updateClassInstance(oldVdom, newVdom);
   }
 }
-
-/**
- * 更新 函数组件
- * @param {*} oldVdom 
- * @param {*} newVdom 
- */
-function updateFunction(oldVdom, newVdom) {
-
-  // debugger;
-  console.log(newVdom.type);
-  const { type, props } = newVdom;
-  const vdom = type(props)
-  newVdom.renderVdom = vdom;
-  compareTwoVdom(oldVdom.renderVdom.dom.parentNode, oldVdom.renderVdom, vdom)
-}
-
 
 /**
  * 更新组件实例

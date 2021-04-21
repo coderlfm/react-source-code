@@ -54,29 +54,11 @@ export function cloneElement(element, config, children) {
   return { ...element, props: { ...config, children: [...config.children, ...children] } };
 }
 
-export function createContext() {
-
-  function Provider({ children, value }) {
-    Provider.value = value;
-    return children
-  }
-
-  function Consumer({ children }) {
-    return children(Provider.value)
-  }
-
-  return {
-    Provider,
-    Consumer,
-  }
-}
-
 const React = {
   createElement,
   Component,
   createRef,
   cloneElement,
-  createContext 
 };
 
 export default React;

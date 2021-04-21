@@ -138,9 +138,9 @@ class Component {
     // debugger;
 
     // 实现 getDerivedStateFromProps 生命周期
-    if (this.ownVdom.type.getDerivedStateFromProps) {
+    if (this.onwVdom.type.getDerivedStateFromProps) {
       const { children, ...props } = this.props;
-      const newState = this.ownVdom.type.getDerivedStateFromProps(props, this.state);
+      const newState = this.onwVdom.type.getDerivedStateFromProps(props, this.state);
       newState && (this.state = newState);
     }
     

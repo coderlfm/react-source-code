@@ -1,87 +1,68 @@
 import React from './react';
 import ReactDOM from './react-dom';
 
+const ThemeContext = React.createContext();
 
-// 高阶组件
-const CounterWrapper = (props) => (OldComponent) => {
-  return class extends React.Component {
-
-    componentDidMount() {
-      console.log('组件挂载完成', props, this.props);
-    }
-
-    render() {
-      return <OldComponent {...this.props} subTitle={props} />;
-    }
-  }
-}
-
-class Counter extends React.Component {
-
+class Parent extends React.Component {
   state = {
-    count: 0,
-  };
+    color: 'red'
+  }
 
-  increment = event => {
-    this.setState({ count: this.state.count + 1 });
-  };
+  /**
+   * 修改颜色
+   */
+  handleOnChangeColor = () => {
+    console.log();
+    this.setState({
+      color: this.state.color === 'red' ? 'green' : 'red'
+    })
+  }
+
 
   render() {
+    const style = { color: this.state.color, changeColor: this.handleOnChangeColor };
 
     return (
-      <div>
-        <p>{this.state.count}</p>
-        <br />
-        {this.props.title}
-        {this.props.subTitle}
-        <button onClick={this.increment}>更新+</button>
-      </div>
-    );
+      <ThemeContext.Provider value={style}>
+        <main> <Children /> </main>
+      </ThemeContext.Provider>
+    )
   }
 }
 
-
-// 反向继承
-/**
- * 场景：使用例如 Antd 的组件时，我们可能想在这些组件身上加一下额外的属性
- */
-class Button extends React.Component {
-
-  componentDidMount() {
-    console.log('componentDidMount()');
-  }
-
+class Children extends React.Component {
   render() {
-    return <button>点击</button>
+    return <ThemeContext.Consumer>
+      {
+        ({ color }) => {
+          {/* console.log('color ', color) */}
+          return <div style={{ border: `2px solid ${color}`, padding: '5px' }}> <Title /> </div>
+        }
+      }
+    </ThemeContext.Consumer>
   }
 }
 
 
-class CurrentButton extends Button {
-
-  componentDidMount() {
-    console.log('CurrentButton()');
-    super.componentDidMount();
-  }
-
-  handleClick = () => {
-    console.log('点击事件');
-  }
-
+class Title extends React.Component {
   render() {
-    const oldComponent = super.render();
-    const newProps = { ...oldComponent.props, onClick: this.handleClick }
-    const oldChilren = oldComponent.children;
-
-    console.log('oldComponent:', oldComponent);
-
-    return React.cloneElement(oldComponent, newProps, oldChilren, 123)
+    return <ThemeContext.Consumer>
+      {
+        ({ color, changeColor }) => {
+          {/* console.log('color ', color, changeColor) */ }
+          return <div>
+            <h1 style={{ border: `2px solid ${color}`, color }}> hello Context </h1>
+            <button onClick={changeColor}>修改颜色</button>
+          </div>;
+        }
+      }
+    </ThemeContext.Consumer>
   }
-
 }
+
 // const Element = CounterWrapper('子标题可以自定义哦')(Counter);
 // const Element = CounterWrapper('子标题可以自定义哦')(Counter);
 
 
 // console.log(Element);
-ReactDOM.render(<CurrentButton />, document.getElementById('root'));
+ReactDOM.render(<Parent />, document.getElementById('root'));
