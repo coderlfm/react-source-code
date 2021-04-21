@@ -39,10 +39,26 @@ export function createRef(defaultVal) {
   return { current: defaultVal };
 }
 
+/**
+ * 克隆元素
+ * @param {*} element 
+ * @param {*} config 
+ * @param {*} children 
+ * @returns 
+ */
+export function cloneElement(element, config, children) {
+  // 第三个元素后面都是子元素
+  if (arguments.length > 3) {
+    children = Array.prototype.splice.call(arguments, 2);
+  }
+  return { ...element, props: { ...config, children: [...config.children, ...children] } };
+}
+
 const React = {
   createElement,
   Component,
   createRef,
+  cloneElement,
 };
 
 export default React;
