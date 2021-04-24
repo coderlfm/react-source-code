@@ -23,9 +23,12 @@ class Parent extends React.Component {
 
     return (
       <div>
+        <h2>
+          状态: {this.state.show ? 'show' : 'hide'}
+        </h2>
         {
           this.state.show ? <Children /> : null
-      }
+        }
 
         <button onClick={this.handleChangeShow}>切换</button>
       </div>

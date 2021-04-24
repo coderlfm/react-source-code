@@ -272,15 +272,20 @@ function findDom(oldVdom) {
  */
 function domDiff(parentDom, oldVdom, newVdom) {
   // debugger;
+  
+  // 兼容 <p> name: {this.name}</p>  p元素的 children 为两个 字符串的情况
   if (
     (typeof oldVdom === 'string' && typeof newVdom === 'string') ||
     (typeof oldVdom === 'number' && typeof newVdom === 'number')
   ) {
     if (oldVdom !== newVdom) {
-      // parentDom.repliceChild(oldVdom, newVdom);
-      parentDom.repliceChild(newVdom, oldVdom);
-      // repli innerText = newVdom;
 
+      for (let key in parentDom.childNodes) {
+        if (parentDom.childNodes[key].textContent === oldVdom) {
+          parentDom.childNodes[key].textContent = newVdom;
+          break;
+        }
+      }
       return;
     }
     return;
