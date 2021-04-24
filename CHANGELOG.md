@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/coderlfm/react-source-code/compare/v1.1.0...v1.2.0) (2021-04-24)
+
+
+### Features
+
+* **cloneElement:** 新增 cloneElement 和 反向继承 ([13f748c](https://github.com/coderlfm/react-source-code/commit/13f748c1f835e4641d1ec10d3dd2b304bcba0457))
+* **component:** 实现 PureComponent ([7758334](https://github.com/coderlfm/react-source-code/commit/7758334bcfc9bb870a1673ec74237f702a0b8e92))
+* **createContext:** 完成 createContext ([9d57bf6](https://github.com/coderlfm/react-source-code/commit/9d57bf64c3898ed176318298f213d3bb128301f9))
+* **dom:** 实现 组件嵌套时递归查找真实dom的 ([65f245e](https://github.com/coderlfm/react-source-code/commit/65f245ed674cbeec7cb3cc0892ff3b9340460fb8))
+* 新增 高阶组件 ([54330b9](https://github.com/coderlfm/react-source-code/commit/54330b976031726f5dcaee71f70f17359b9db59b))
+* **event:** 新增 合成事件对象 ([9b109b4](https://github.com/coderlfm/react-source-code/commit/9b109b4eb9d6906de17f6cedb6adb6a490076556))
+* **lifecycle:** 实现 类组件 基本生命周期 ([45cae01](https://github.com/coderlfm/react-source-code/commit/45cae0144657b53d3b9f250127cc3ab775da8694))
+* **lifecycle:** 实现 类组件更新阶段生命周期 ([116d8ef](https://github.com/coderlfm/react-source-code/commit/116d8ef2895b2b73d0a5ee86bfd1a7ed373b7db7))
+* **lifecycle:** 实现 类组件更新阶段生命周期 ([99a77b3](https://github.com/coderlfm/react-source-code/commit/99a77b315a11394611e6aaec91c413eea10df29a))
+* **lifecycle:** 完成 组件插入的位置 ([6ddfa34](https://github.com/coderlfm/react-source-code/commit/6ddfa34644107949de19d9ab7d3fb5258472cd62))
+* **lifecycle:** 优化生命周期实现 ([3487c5b](https://github.com/coderlfm/react-source-code/commit/3487c5b7ce017e3ae9bacbb5183de3bb1194498b))
+* **lifeCycle:** 新增 getDerivedStateFromProps 生命周期 ([8f69c46](https://github.com/coderlfm/react-source-code/commit/8f69c46160ddb6c4390fff3221bd59c7747dd36d))
+* **lifycycle:** 实现完整 生命周期 ([8d3c029](https://github.com/coderlfm/react-source-code/commit/8d3c02980599bd05acf1714994b0afae865e83bf))
+* **ref:** 新增 实现 ref ([a80226e](https://github.com/coderlfm/react-source-code/commit/a80226e12337669469df421e918e3d8635430cc5))
+
+
+### Bug Fixes
+
+* **lifycycle:** 修改基本生命周期实现 ([89d383c](https://github.com/coderlfm/react-source-code/commit/89d383ced11c6cbb8d569597d3a01efe77c76ce6))
+* **lifycycle:** 修改基本生命周期实现 ([b1353c8](https://github.com/coderlfm/react-source-code/commit/b1353c865e2f0b9f8a3b7c1063aae2ab4ad7ba8d))
+* **react-dom:** 优化渲染 ([bb13143](https://github.com/coderlfm/react-source-code/commit/bb131437fbe2286c4086249f22832662b5ac4c1f))
+* **react-dom:** 优化diff更新 ([2c86856](https://github.com/coderlfm/react-source-code/commit/2c86856808c73837d9c6b4343122b75eb9cbce6b))
+
 ## [1.1.0](https://github.com/coderlfm/react-source-code/compare/v1.0.0...v1.1.0) (2021-04-05)
 
 
