@@ -207,22 +207,20 @@ export function compareTwoVdom(parentDom, oldVdom, newVdom, nextDom) {
     newVdom.dom = dom;
     // 暂时使用该方式插入
     // parentDom.appendChild(dom);
-
+    
     if (nextDom) {
       parentDom.insertBefore(dom, nextDom);
     } else {
       parentDom.appendChild(dom);
     }
-
+    
     return newVdom;
-
+    
     // 3.如果老的有，新的没有
   } else if (oldVdom && newVdom === null) {
-
+    
     // 此处需要递归查找真实dom，因为react组件没有 dom
-    const currentDom = findDom(oldVdom);
-
-    parentDom.removeChild(currentDom);
+    parentDom.removeChild(oldVdom.dom);
 
     // 这个 oldVdom.classInstance 纠结了很久是怎么获取到的，这里记录一下，在当前例子中，只有childrenCount 才有 classInstance
     // 1. 在Counter 用 children 创建真实dom的时候，第二个 child 是 类组件，类组件会走到 mountClassComponent() ,并且将该组件的 vdom传进去
@@ -248,21 +246,6 @@ export function compareTwoVdom(parentDom, oldVdom, newVdom, nextDom) {
   return newVdom;
 }
 
-/**
- * 递归查找真实 dom
- */
-function findDom(oldVdom) {
-  const { type } = oldVdom;
-
-  if (typeof type === 'function') {
-    if (type.isReactComponent) {
-      return findDom(oldVdom.classInstance.oldVdom)
-    }
-    return findDom(oldVdom.renderVdom)
-  } else {
-    return oldVdom.dom;
-  }
-}
 
 /**
  * 进行diff比较
