@@ -5,8 +5,8 @@ import { addEvent } from './event';
  * @param {Object} vdom 虚拟dom
  * @param {*} container 容器
  */
-function render(vdom, container) {
-  const dom = createDOM(vdom);
+function render(vdom, container, mountIndex) {
+  const dom = createDOM(vdom, mountIndex);
   dom && container.appendChild(dom);
 }
 
@@ -24,10 +24,13 @@ function render(vdom, container) {
  * @param {Object} [vdom.ref]  元素ref
  * @param {null} vdom.ref.current  元素ref current
  */
-export function createDOM(vdom) {
+export function createDOM(vdom, mountIndex) {
   // 1. 如果 vdom 是字符串或者数字，则创建一个文本节点
   if (typeof vdom === 'string' || typeof vdom === 'number') {
-    return document.createTextNode(vdom);
+    const dom = document.createTextNode(vdom);
+    dom._mountIndex = mountIndex;
+
+    return dom;
   }
 
   // 2. 如果 vdom 是 null 或者 undefined 则返回空串
@@ -80,6 +83,7 @@ export function createDOM(vdom) {
   // 给类组件的vdom身上加上dom属性，在组件更新的时候才能获取到
   // debugger;
   vdom.dom = dom;
+  dom._mountIndex = mountIndex;
   return dom;
 }
 
@@ -145,7 +149,12 @@ function mountFunctionComponent(vdom) {
  * @param {*} container 容器
  */
 function reconcileChilren(childernVdom, container) {
-  childernVdom.forEach(vdom => render(vdom, container));
+  childernVdom.forEach((vdom, index) => {
+    // 此处挂上 _mountIndex 为保证 children 为多个文本节点时，确保更新的准确性
+    // vdom._mountIndex = index;
+    render(vdom, container, index)
+  }
+  );
 }
 
 /**
@@ -271,25 +280,6 @@ function findDom(oldVdom) {
  * @returns
  */
 function domDiff(parentDom, oldVdom, newVdom) {
-  // debugger;
-  
-  // 兼容 <p> name: {this.name}</p>  p元素的 children 为两个 字符串的情况
-  if (
-    (typeof oldVdom === 'string' && typeof newVdom === 'string') ||
-    (typeof oldVdom === 'number' && typeof newVdom === 'number')
-  ) {
-    if (oldVdom !== newVdom) {
-
-      for (let key in parentDom.childNodes) {
-        if (parentDom.childNodes[key].textContent === oldVdom) {
-          parentDom.childNodes[key].textContent = newVdom;
-          break;
-        }
-      }
-      return;
-    }
-    return;
-  }
 
   // 复用 旧的dom
   const currentDOM = (newVdom.dom = oldVdom.dom);
@@ -375,12 +365,40 @@ function updateChildren(parentDom, oldChildren, newChildren) {
 
   const maxLength = Math.max(oldChildren.length, newChildren.length);
 
+  /**
+   * 寻找真实 dom
+   * @param {*} index 
+   * @returns 
+   */
+  function findDomByIndex(index) {
+    for (let i = 0; i < parentDom.childNodes.length; i++) {
+      if (parentDom.childNodes[i]._mountIndex === index) {
+
+        return parentDom.childNodes[i];
+      }
+    }
+  }
+
   // debugger;
   for (let index = 0; index < maxLength; index++) {
-    // const element = maxLength[index];
-    // 在旧的 vdom 身上查找 当前 [index] 的vdom 是否有下一个 dom，有的话需要在这一步查找出来
-    const nextDom = oldChildren.find((item, itemIndex) => item && itemIndex > index && item.dom);
-    compareTwoVdom(parentDom, oldChildren[index], newChildren[index], nextDom && nextDom.dom);
+
+    // 兼容 <p> name: {this.name}</p>  p元素的 children 为两个 字符串的情况
+    if (
+      (typeof oldChildren[index] === 'string' && typeof newChildren[index] === 'string') ||
+      (typeof oldChildren[index] === 'number' && typeof newChildren[index] === 'number')
+    ) {
+      const dom = findDomByIndex(index);
+      if (dom.textContent !== newChildren[index]) {
+        dom.textContent = newChildren[index];
+      }
+      continue;
+
+    } else {
+      // const element = maxLength[index];
+      // 在旧的 vdom 身上查找 当前 [index] 的vdom 是否有下一个 dom，有的话需要在这一步查找出来
+      const nextDom = oldChildren.find((item, itemIndex) => item && itemIndex > index && item.dom);
+      compareTwoVdom(parentDom, oldChildren[index], newChildren[index], nextDom && nextDom.dom);
+    }
   }
 }
 
