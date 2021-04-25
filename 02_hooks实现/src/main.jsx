@@ -2,11 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 
-const hooksState = [];  // 存储所有的 hooks 
+const hookStates = [];  // 存储所有的 hooks 
 let lastIndex = 0;      // 记录当前渲染的索引，每次调用一个hooks 都会自增，render 一次后重置为 0 ，保证索引的正确性
 
 function useState(initialState) {
-  hooksState[lastIndex] = hooksState[lastIndex] || initialState;
+  hookStates[lastIndex] = hookStates[lastIndex] || initialState;
 
   // 记录当前的索引，保证下次 调用setState 的时候 修改的 state 是原来的的索引，而不是最有一次的索引
   const currentIndex = lastIndex++;
@@ -14,30 +14,60 @@ function useState(initialState) {
   function setState(nweState) {
     // debugger;
     if (typeof nweState === 'function') {
-      hooksState[currentIndex] = nweState(hooksState[currentIndex]);
+      hookStates[currentIndex] = nweState(hookStates[currentIndex]);
     } else {
-      hooksState[currentIndex] = nweState;
+      hookStates[currentIndex] = nweState;
     }
     render();
   }
 
-  return [hooksState[currentIndex], setState]
+  return [hookStates[currentIndex], setState]
 }
 
 
 function useRef() {
-  hooksState[lastIndex] = hooksState[lastIndex] || { current: null }
+  hookStates[lastIndex] = hookStates[lastIndex] || { current: null }
 
   // 设置完后需要自增索引
-  return hooksState[lastIndex++];
+  return hookStates[lastIndex++];
+}
+
+function useMemo(factory, deps) {
+
+  if (hookStates[lastIndex]) {
+
+    // 说明上一次有
+    const [oldMemo, prevDeps] = hookStates[lastIndex];
+
+    if (prevDeps.length && prevDeps.every((item, index) => item !== deps[index])) {
+
+      const memo = factory();
+      hookStates[lastIndex++] = [memo, deps];
+      return memo;
+    } else {
+      lastIndex++;
+      return oldMemo;
+    }
+
+  } else {
+    const memo = factory();
+
+    hookStates[lastIndex++] = [memo, deps]
+    return memo;
+  }
+
 }
 
 
 function App() {
 
+  // debugger;
   const [counter, setCounter] = useState(0);
   const [counterMax, setCounterMax] = useState(10);
   const counterRef = useRef();
+  const memoCounter = useMemo(() => {
+    return counter * 100
+  }, [counter])
 
   const handleClick = () => {
     setTimeout(() => {
@@ -49,6 +79,8 @@ function App() {
   return <div>
     <h2 onClick={handleClick}>
       counter: {counter}
+      <br />
+      counterRef: {counterRef.current}
       <br />
       <button onClick={() => {
         counterRef.current = counter + 1;
@@ -64,12 +96,13 @@ function App() {
       <button onClick={() => setCounterMax((counterMax) => counterMax + 10)}> 函数添加+</button>
     </h2>
 
+    <h2>counter 的 useMemo:{memoCounter}</h2>
   </div>;
 }
 
 function render() {
   // 每次 render 都需要让索引重置
-  // lastIndex = 0;
+  lastIndex = 0;
   ReactDOM.render(
     <App />,
     document.getElementById('root')
