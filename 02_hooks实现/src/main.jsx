@@ -58,6 +58,28 @@ function useMemo(factory, deps) {
 
 }
 
+function useCallback(fn, deps) {
+
+  if (hookStates[lastIndex]) {
+
+    // 说明上一次有
+    const [lastFn, prevDeps] = hookStates[lastIndex];
+
+    if (prevDeps.length && prevDeps.every((item, index) => item !== deps[index])) {
+
+      hookStates[lastIndex++] = [fn, deps];
+      return fn;
+    } else {
+      lastIndex++;
+      return lastFn;
+    }
+
+  } else {
+
+    hookStates[lastIndex++] = [fn, deps]
+    return fn;
+  }
+}
 
 function App() {
 
