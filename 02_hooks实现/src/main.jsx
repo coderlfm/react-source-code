@@ -43,12 +43,11 @@ function useEffect(effect, deps) {
 
     const [prevEffect, prevDestroy, prevDeps] = hookStates[lastIndex];
 
-    const isUpdate = prevDeps.every((item, index) => item !== deps[index]);
-    prevDestroy && prevDestroy();
-
-    const destroy = prevEffect();
+    const isUpdate = deps.length && prevDeps.every((item, index) => item !== deps[index]);
 
     if (isUpdate) {
+      prevDestroy && prevDestroy();
+      const destroy = prevEffect();
       hookStates[lastIndex++] = [effect, destroy, deps];
     }
 
@@ -69,7 +68,7 @@ function App() {
     return () => {
       console.log('组件卸载');
     }
-  }, [counter])
+  }, [])
 
 
   const handleClick = () => {
@@ -91,12 +90,6 @@ function App() {
   </div>;
 }
 
-function Child() {
-
-  return <div >
-    child
-  </div>
-}
 
 
 function render() {
