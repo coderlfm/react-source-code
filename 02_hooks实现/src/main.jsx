@@ -12,7 +12,6 @@ function reducer(state, action) {
   }
 }
 
-let lastRecuder;
 const hookStates = [];
 let lastIndex = 0;
 
@@ -20,7 +19,7 @@ function useReducer(reducer, initializerArg, init) {
 
   const currentIndex = lastIndex++;
 
-  if (!hookStates[currentIndex] ) {
+  if (!hookStates[currentIndex]) {
     hookStates[currentIndex] = init(initializerArg);
   }
 
@@ -33,25 +32,44 @@ function useReducer(reducer, initializerArg, init) {
   return [hookStates[currentIndex], dispatch]
 }
 
+function useState(initialize) {
+  
+}
+
+
+function useEffect(effect, deps) {
+
+  if (hookStates[lastIndex]) {
+
+    const [prevEffect, prevDeps] = hookStates[lastIndex];
+
+    const isUpdate = prevDeps.every((item, index) => item !== deps[index]);
+    prevEffect();
+    const effect = effect();
+
+    if (isUpdate) {
+      hookStates[lastIndex++] = [effect, deps];
+    }
+
+  } else {
+    hookStates[lastIndex++] = [effect(), deps];
+  }
+
+}
+
 
 function App() {
 
   const [counter, setCounter] = React.useState(0);
-  const [counterMax, setCounterMax] = React.useState(10);
-  const counterRef = React.useRef();
 
-  const [number, dispatch] = useReducer(reducer, { counter: 0 }, (value) => {
-    return { number: value.counter }
-  })
-
-  const memoCounter = React.useMemo(() => {
-    return counter * 100
+  useEffect(() => {
+    console.log('重新渲染');
   }, [counter])
 
 
   const handleClick = () => {
     setTimeout(() => {
-      console.log(counterRef.current);
+      // console.log(counterRef.current);
     }, 2000);
   }
 
@@ -60,27 +78,11 @@ function App() {
     <h2 onClick={handleClick}>
       counter: {counter}
       <br />
-      counterRef: {counterRef.current}
-      <br />
       <button onClick={() => {
-        counterRef.current = counter + 1;
         setCounter(counter + 1);
-      }}>+</button>
-      <button onClick={() => setCounter((count) => count + 1)}> 函数添加+</button>
+      }}>++</button>
     </h2>
 
-    <h2 onClick={handleClick}>
-      counterMax: {counterMax}
-      <br />
-      <button onClick={() => setCounterMax(counterMax + 10)}>+</button>
-      <button onClick={() => setCounterMax((counterMax) => counterMax + 10)}> 函数添加+</button>
-    </h2>
-
-    <h2>counter 的 useMemo:{memoCounter}</h2>
-    <h2>useReducer :{number.number} <button onClick={() => {
-      dispatch({ type: 'ADD', payload: number.number + 1 })
-    }}>+</button></h2>
-    <Child />
   </div>;
 }
 

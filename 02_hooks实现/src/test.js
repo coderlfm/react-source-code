@@ -1,6 +1,5 @@
-function fn(args) {
-  Array.prototype.slice.call(arguments,2)
-  console.log(args);
-}
+let a = { name: '111' };
+let b = a;
 
-fn(', ', 'a', 'b', 'c')
+a = null;
+console.log(b);
