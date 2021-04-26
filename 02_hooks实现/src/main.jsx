@@ -13,19 +13,24 @@ function reducer(state, action) {
 }
 
 let lastRecuder;
+const hookStates = [];
+let lastIndex = 0;
 
 function useReducer(reducer, initializerArg, init) {
 
-  if (!lastRecuder) {
-    lastRecuder = init(initializerArg);
+  const currentIndex = lastIndex++;
+
+  if (!hookStates[currentIndex] ) {
+    hookStates[currentIndex] = init(initializerArg);
   }
 
+
   function dispatch(action) {
-    lastRecuder = reducer(initializerArg, action);
+    hookStates[currentIndex] = reducer(initializerArg, action);
     render()
   }
 
-  return [lastRecuder, dispatch]
+  return [hookStates[currentIndex], dispatch]
 }
 
 
@@ -81,7 +86,6 @@ function App() {
 
 function Child() {
 
-
   return <div >
     child
   </div>
@@ -90,6 +94,7 @@ function Child() {
 
 function render() {
   // 每次 render 都需要让索引重置
+  lastIndex = 0
   ReactDOM.render(
     <App />,
     document.getElementById('root')
