@@ -20,12 +20,12 @@ function useReducer(reducer, initializerArg, init) {
   const currentIndex = lastIndex++;
 
   if (!hookStates[currentIndex]) {
-    hookStates[currentIndex] = init(initializerArg);
+    hookStates[currentIndex] = init ? init(initializerArg) : initializerArg;
   }
 
 
   function dispatch(action) {
-    hookStates[currentIndex] = reducer(initializerArg, action);
+    hookStates[currentIndex] = reducer ? reducer(initializerArg, action) : action;
     render()
   }
 
@@ -33,7 +33,7 @@ function useReducer(reducer, initializerArg, init) {
 }
 
 function useState(initialize) {
-  
+  return useReducer(null, initialize);
 }
 
 
@@ -41,18 +41,19 @@ function useEffect(effect, deps) {
 
   if (hookStates[lastIndex]) {
 
-    const [prevEffect, prevDeps] = hookStates[lastIndex];
+    const [prevEffect, prevDestroy, prevDeps] = hookStates[lastIndex];
 
     const isUpdate = prevDeps.every((item, index) => item !== deps[index]);
-    prevEffect();
-    const effect = effect();
+    prevDestroy && prevDestroy();
+
+    const destroy = prevEffect();
 
     if (isUpdate) {
-      hookStates[lastIndex++] = [effect, deps];
+      hookStates[lastIndex++] = [effect, destroy, deps];
     }
 
   } else {
-    hookStates[lastIndex++] = [effect(), deps];
+    hookStates[lastIndex++] = [effect, effect(), deps];
   }
 
 }
@@ -60,10 +61,14 @@ function useEffect(effect, deps) {
 
 function App() {
 
-  const [counter, setCounter] = React.useState(0);
+  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
     console.log('重新渲染');
+
+    return () => {
+      console.log('组件卸载');
+    }
   }, [counter])
 
 
