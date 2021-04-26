@@ -1,43 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+const StyleProvider = React.createContext();
 
-function reducer(state, action) {
-  switch (action.type) {
-    case 'ADD':
-      return { number: action.payload };
-
-    default:
-      state;
-  }
-}
-
-let lastRecuder;
-
-function useReducer(reducer, initializerArg, init) {
-
-  if (!lastRecuder) {
-    lastRecuder = init(initializerArg);
-  }
-
-  function dispatch(action) {
-    lastRecuder = reducer(initializerArg, action);
-    render()
-  }
-
-  return [lastRecuder, dispatch]
+function useContext(context) {
+  return context._currentValue;
 }
 
 
 function App() {
 
+  // debugger;
   const [counter, setCounter] = React.useState(0);
   const [counterMax, setCounterMax] = React.useState(10);
   const counterRef = React.useRef();
-
-  const [number, dispatch] = useReducer(reducer, { counter: 0 }, (value) => {
-    return { number: value.counter }
-  })
+  const [style] = React.useState({ color: 'red' })
 
   const memoCounter = React.useMemo(() => {
     return counter * 100
@@ -72,17 +49,17 @@ function App() {
     </h2>
 
     <h2>counter 的 useMemo:{memoCounter}</h2>
-    <h2>useReducer :{number.number} <button onClick={() => {
-      dispatch({ type: 'ADD', payload: number.number + 1 })
-    }}>+</button></h2>
-    <Child />
+    <StyleProvider.Provider value={style} >
+      <Child />
+    </StyleProvider.Provider>
   </div>;
 }
 
 function Child() {
 
+  const style = useContext(StyleProvider);
 
-  return <div >
+  return <div style={style}>
     child
   </div>
 }
