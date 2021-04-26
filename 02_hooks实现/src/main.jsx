@@ -1,95 +1,25 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+const StyleProvider = React.createContext();
 
-const hookStates = [];  // 存储所有的 hooks 
-let lastIndex = 0;      // 记录当前渲染的索引，每次调用一个hooks 都会自增，render 一次后重置为 0 ，保证索引的正确性
-
-function useState(initialState) {
-  hookStates[lastIndex] = hookStates[lastIndex] || initialState;
-
-  // 记录当前的索引，保证下次 调用setState 的时候 修改的 state 是原来的的索引，而不是最有一次的索引
-  const currentIndex = lastIndex++;
-
-  function setState(nweState) {
-    // debugger;
-    if (typeof nweState === 'function') {
-      hookStates[currentIndex] = nweState(hookStates[currentIndex]);
-    } else {
-      hookStates[currentIndex] = nweState;
-    }
-    render();
-  }
-
-  return [hookStates[currentIndex], setState]
+function useContext(context) {
+  return context._currentValue;
 }
 
-
-function useRef() {
-  hookStates[lastIndex] = hookStates[lastIndex] || { current: null }
-
-  // 设置完后需要自增索引
-  return hookStates[lastIndex++];
-}
-
-function useMemo(factory, deps) {
-
-  if (hookStates[lastIndex]) {
-
-    // 说明上一次有
-    const [oldMemo, prevDeps] = hookStates[lastIndex];
-
-    if (prevDeps.length && prevDeps.every((item, index) => item !== deps[index])) {
-
-      const memo = factory();
-      hookStates[lastIndex++] = [memo, deps];
-      return memo;
-    } else {
-      lastIndex++;
-      return oldMemo;
-    }
-
-  } else {
-    const memo = factory();
-
-    hookStates[lastIndex++] = [memo, deps]
-    return memo;
-  }
-
-}
-
-function useCallback(fn, deps) {
-
-  if (hookStates[lastIndex]) {
-
-    // 说明上一次有
-    const [lastFn, prevDeps] = hookStates[lastIndex];
-
-    if (prevDeps.length && prevDeps.every((item, index) => item !== deps[index])) {
-
-      hookStates[lastIndex++] = [fn, deps];
-      return fn;
-    } else {
-      lastIndex++;
-      return lastFn;
-    }
-
-  } else {
-
-    hookStates[lastIndex++] = [fn, deps]
-    return fn;
-  }
-}
 
 function App() {
 
   // debugger;
-  const [counter, setCounter] = useState(0);
-  const [counterMax, setCounterMax] = useState(10);
-  const counterRef = useRef();
-  const memoCounter = useMemo(() => {
+  const [counter, setCounter] = React.useState(0);
+  const [counterMax, setCounterMax] = React.useState(10);
+  const counterRef = React.useRef();
+  const [style] = React.useState({ color: 'red' })
+
+  const memoCounter = React.useMemo(() => {
     return counter * 100
   }, [counter])
+
 
   const handleClick = () => {
     setTimeout(() => {
@@ -119,12 +49,24 @@ function App() {
     </h2>
 
     <h2>counter 的 useMemo:{memoCounter}</h2>
+    <StyleProvider.Provider value={style} >
+      <Child />
+    </StyleProvider.Provider>
   </div>;
 }
 
+function Child() {
+
+  const style = useContext(StyleProvider);
+
+  return <div style={style}>
+    child
+  </div>
+}
+
+
 function render() {
   // 每次 render 都需要让索引重置
-  lastIndex = 0;
   ReactDOM.render(
     <App />,
     document.getElementById('root')
