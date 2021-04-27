@@ -47,12 +47,17 @@ function useEffect(effect, deps) {
 
     if (isUpdate) {
       prevDestroy && prevDestroy();
-      const destroy = prevEffect();
-      hookStates[lastIndex++] = [effect, destroy, deps];
+
+      setTimeout(() => {
+        const destroy = prevEffect();
+        hookStates[lastIndex++] = [effect, destroy, deps];
+      });
     }
 
   } else {
-    hookStates[lastIndex++] = [effect, effect(), deps];
+    setTimeout(() => {
+      hookStates[lastIndex++] = [effect, effect(), deps];
+    })
   }
 
 }
