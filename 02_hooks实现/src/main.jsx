@@ -52,6 +52,7 @@ function useEffect(effect, deps) {
         const destroy = prevEffect();
         hookStates[lastIndex++] = [effect, destroy, deps];
       });
+
     }
 
   } else {
@@ -62,6 +63,31 @@ function useEffect(effect, deps) {
 
 }
 
+function useLayoutEffect(effect, deps) {
+  if (hookStates[lastIndex]) {
+
+    const [prevEffect, prevDestroy, prevDeps] = hookStates[lastIndex];
+
+    const isUpdate = deps.length && prevDeps.every((item, index) => item !== deps[index]);
+
+    if (isUpdate) {
+      prevDestroy && prevDestroy();
+      
+      // 或者使用 Promise.resolve().then(()=>{ // 函数体 })
+      // 开启一个微任务
+      queueMicrotask(() => {
+        const destroy = prevEffect();
+        hookStates[lastIndex++] = [effect, destroy, deps];
+      })
+
+    }
+
+  } else {
+    queueMicrotask(() => {
+      hookStates[lastIndex++] = [effect, effect(), deps];
+    })
+  }
+}
 
 function useImperativeHandle(ref, init) {
   ref.current = init();
@@ -75,11 +101,14 @@ function App() {
   const divRef = React.useRef();
   const inputRef = React.useRef();
 
-  useEffect(() => {
+
+  useLayoutEffect(() => {
     console.log('重新渲染');
 
+    divRef.current.style.transform = 'translate(50px)'
+    divRef.current.style.transition = 'all 1s'
 
-    console.log(divRef.current.style.trans);
+    console.log();
 
     return () => {
       console.log('组件卸载');
@@ -103,7 +132,7 @@ function App() {
       }}>++</button>
     </h2>
 
-    <div style={{ width: 50, height: 50, background: '#cccg' }} ref={divRef}>
+    <div style={{ width: 50, height: 50, background: '#ccc' }} ref={divRef}>
 
     </div>
 
