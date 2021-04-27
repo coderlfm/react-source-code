@@ -63,12 +63,23 @@ function useEffect(effect, deps) {
 }
 
 
+function useImperativeHandle(ref, init) {
+  ref.current = init();
+}
+
+
+
 function App() {
 
   const [counter, setCounter] = useState(0);
+  const divRef = React.useRef();
+  const inputRef = React.useRef();
 
   useEffect(() => {
     console.log('重新渲染');
+
+
+    console.log(divRef.current.style.trans);
 
     return () => {
       console.log('组件卸载');
@@ -92,8 +103,38 @@ function App() {
       }}>++</button>
     </h2>
 
+    <div style={{ width: 50, height: 50, background: '#cccg' }} ref={divRef}>
+
+    </div>
+
+    <RefChild ref={inputRef} />
+    <button onClick={
+      () => {
+        console.log(inputRef.current)
+        inputRef.current.focus()
+        inputRef.current.style.color = 'red'
+      }
+    }>聚焦</button>
   </div>;
 }
+
+
+const RefChild = React.forwardRef((props, ref) => {
+
+  const childRef = React.useRef();
+
+  // 限制对外暴露的方法或者变量
+  useImperativeHandle(ref, () => (
+    {
+      focus: () => {
+        childRef.current.focus();
+      }
+    }
+  ))
+
+  return <input ref={childRef} />
+})
+
 
 
 
