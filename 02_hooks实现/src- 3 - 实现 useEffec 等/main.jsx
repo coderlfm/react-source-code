@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
 
 
 function reducer(state, action) {
@@ -120,30 +119,24 @@ function useImperativeHandle(ref, init) {
   ref.current = init();
 }
 
-// 自定义动画
-function useAnimation(baseClassName) {
 
-  const [className, setClassName] = useState(baseClassName)
-
-  function start() {
-    if (className === 'circle') {
-      setClassName('circle-big')
-    } else {
-      setClassName('circle')
-    }
-  }
-
-  return [className, start];
-}
 
 function App() {
 
-  const [className, start] = useAnimation('circle')
+  // debugger;
+  const [users, loadMore] = useRequest(`http://localhost:8000/api/users`);
+
+  if (!users.length) {
+    return <h4>loading...</h4>
+  }
 
   return <div>
-    <div className={className}></div>
-    <br />
-    <button onClick={start} >加载更多</button>
+    <ul>
+      {users.map(item => {
+        return <li key={item.id}>{item.title}</li>
+      })}
+    </ul>
+    <button onClick={loadMore}>加载更多</button>
   </div>;
 }
 
