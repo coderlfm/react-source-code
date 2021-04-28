@@ -63,6 +63,32 @@ function useEffect(effect, deps) {
 
 }
 
+// 自定义 hooks 实现 useRequest
+function useRequest(url) {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [data, setData] = useState([]);
+
+  const loadMore = () => {
+    setData(null);
+
+    console.log(`${url}?page=${page}&pageSize=${pageSize}`);
+
+    fetch(`${url}?page=${page}&pageSize=${pageSize}`).then(res => res.json())
+      .then(res => {
+        setPage(page + 1)
+        setData([...data, ...res.data]);
+      })
+  }
+
+  useEffect(() => {
+    loadMore();
+  }, [])
+
+  return [data, loadMore];
+
+}
+
 function useLayoutEffect(effect, deps) {
   if (hookStates[lastIndex]) {
 
@@ -72,7 +98,7 @@ function useLayoutEffect(effect, deps) {
 
     if (isUpdate) {
       prevDestroy && prevDestroy();
-      
+
       // 或者使用 Promise.resolve().then(()=>{ // 函数体 })
       // 开启一个微任务
       queueMicrotask(() => {
@@ -97,72 +123,22 @@ function useImperativeHandle(ref, init) {
 
 function App() {
 
-  const [counter, setCounter] = useState(0);
-  const divRef = React.useRef();
-  const inputRef = React.useRef();
+  // debugger;
+  const [users, loadMore] = useRequest(`http://localhost:8000/api/users`);
 
-
-  useLayoutEffect(() => {
-    console.log('重新渲染');
-
-    divRef.current.style.transform = 'translate(50px)'
-    divRef.current.style.transition = 'all 1s'
-
-    console.log();
-
-    return () => {
-      console.log('组件卸载');
-    }
-  }, [])
-
-
-  const handleClick = () => {
-    setTimeout(() => {
-      // console.log(counterRef.current);
-    }, 2000);
+  if (!users.length) {
+    return <h4>loading...</h4>
   }
 
-
   return <div>
-    <h2 onClick={handleClick}>
-      counter: {counter}
-      <br />
-      <button onClick={() => {
-        setCounter(counter + 1);
-      }}>++</button>
-    </h2>
-
-    <div style={{ width: 50, height: 50, background: '#ccc' }} ref={divRef}>
-
-    </div>
-
-    <RefChild ref={inputRef} />
-    <button onClick={
-      () => {
-        console.log(inputRef.current)
-        inputRef.current.focus()
-        inputRef.current.style.color = 'red'
-      }
-    }>聚焦</button>
+    <ul>
+      {users.map(item => {
+        return <li key={item.id}>{item.title}</li>
+      })}
+    </ul>
+    <button onClick={loadMore}>加载更多</button>
   </div>;
 }
-
-
-const RefChild = React.forwardRef((props, ref) => {
-
-  const childRef = React.useRef();
-
-  // 限制对外暴露的方法或者变量
-  useImperativeHandle(ref, () => (
-    {
-      focus: () => {
-        childRef.current.focus();
-      }
-    }
-  ))
-
-  return <input ref={childRef} />
-})
 
 
 
