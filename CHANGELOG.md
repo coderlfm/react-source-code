@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/coderlfm/react-source-code/compare/v1.2.0...v1.3.0) (2021-04-28)
+
+
+### Features
+
+* **hooks:** 简单实现 hash 和 history 原理 ([cbba53b](https://github.com/coderlfm/react-source-code/commit/cbba53b62777529400811990f5672b75228f78bd))
+* **hooks:** 实现 自定义hooks useRequest ([f25fbbf](https://github.com/coderlfm/react-source-code/commit/f25fbbfb3ca9a786fa5c3739edcf8adb3da0122d))
+* **hooks:** 实现 useContext ([3460558](https://github.com/coderlfm/react-source-code/commit/3460558ab4214ea2ab0c55b9b35f95c7ed86240b))
+* **hooks:** 实现 useEffect ([b9ea56e](https://github.com/coderlfm/react-source-code/commit/b9ea56e95e87fac838f51a76ac8782febe1e2844))
+* **hooks:** 实现 useImperativeHandle ([21ceb8f](https://github.com/coderlfm/react-source-code/commit/21ceb8fa38661f2ee1b343b3ea18f2124322d275))
+* **hooks:** 实现 useLayoutEffect ([da1549e](https://github.com/coderlfm/react-source-code/commit/da1549ea3a718153430039a5c642c0dc325c6cca))
+* **hooks:** 实现 useMemo ([f4d51e2](https://github.com/coderlfm/react-source-code/commit/f4d51e2a17af62d68ed41b83e01da97ff1a34dc1))
+* **hooks:** 实现 useReducer ([122a30d](https://github.com/coderlfm/react-source-code/commit/122a30d61f24b7c0d1137fe365bf8086467ebd54))
+* **hooks:** 实现多个 useState 状态保存的准确性 ([c6eea96](https://github.com/coderlfm/react-source-code/commit/c6eea9649afa36bbd97bfda49f7f037e19f622c6))
+* **hooks:** 实现基本 useState ([26609dd](https://github.com/coderlfm/react-source-code/commit/26609ddbc34b245712e4c0e8f58df56dfb837e7e))
+* **hooks:** 实现自定义 hooks useAnimation 动画 ([3a41395](https://github.com/coderlfm/react-source-code/commit/3a413953b81cebef26c051a87e95502fd0dd891a))
+* **hooks:** 优化 useEffect 实现 ([7aed9e4](https://github.com/coderlfm/react-source-code/commit/7aed9e4d429299ac808c9ad2269c93b7dbdcc05b))
+* **hooks:** 优化 useReducer 实现 ([cccb358](https://github.com/coderlfm/react-source-code/commit/cccb358bdfa07af38ae7d9976a81886aa32ddc6a))
+* **router:** 实现基本 路由结构 ([d715018](https://github.com/coderlfm/react-source-code/commit/d715018887d62ce0ddcce662a66a4055112608e5))
+* 实现 useCallback ([f17bf75](https://github.com/coderlfm/react-source-code/commit/f17bf75f692815452bd809bb2c5730bbb2c4b0ba))
+* **useRef:** 实现 useRef ([5514fc4](https://github.com/coderlfm/react-source-code/commit/5514fc42c4020498027e55a7a4ae2ada2f7d4af3))
+
 ## [1.2.0](https://github.com/coderlfm/react-source-code/compare/v1.1.0...v1.2.0) (2021-04-24)
 
 
