@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>路由原理</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <br />
+  <a href="#/home">首页</a>
+  <a href="#/about">关于</a>
+
+  <script>
+
+    window.onhashchange = function (event) {
+      console.log('event', event);
+
+      root.innerHTML = window.location.hash.slice(1);
+    }
+
+
+
+    // 可以监听到 history 的 back 和 go 等 api 的事件函数
+    window.onpopstate = function (event) {
+      console.log('onpopstate:', event);
+    }
+
+    window.onpushState = function (event) {
+      console.log('onpushState:', event);
+    }
+
+    const historyObj = window.history;
+
+    (function (historyObj) {
+      
+      const oldPushState = history.pushState
+      
+      historyObj.pushState = function (data, title, url) {
+        oldPushState.apply(history, arguments);
+        
+        if (typeof window.onpushState === 'function') {
+          window.onpushState({ data, title, url });
+        }
+      }
+
+    })(historyObj);
+
+
+    // history 路由
+    setTimeout(() => {
+      window.history.pushState('/home_data', 'title: 标题', '/home');
+    }, 1000);
+
+    setTimeout(() => {
+      window.history.pushState('/about_data', 'title: 关于', '/about');
+    }, 2000);
+
+    setTimeout(() => {
+      window.history.pushState('/profile_data', 'title: 我的', '/profile');
+    }, 3000);
+
+    setTimeout(() => {
+      window.history.back();
+    }, 4000);
+
+    setTimeout(() => {
+      window.history.go(1);
+    }, 5000);
+
+
+  </script>
+</body>
+
+</html>
