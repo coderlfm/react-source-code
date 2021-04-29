@@ -1,17 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter, Route } from './react-router-dom'
-
+import { BrowserRouter, HashRouter, Route } from './react-router-dom'
 
 function App() {
 
 
   return <div>
     <h4>实现react-router</h4>
-    <BrowserRouter>
+    <HashRouter>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
-    </BrowserRouter>
+    </HashRouter>
 
   </div>;
 }

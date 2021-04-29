@@ -23,15 +23,19 @@ export default function () {
 
   function listen(listen) {
     listens.push(listen);
+
+    return function () {
+      listens = listens.filter(l => l != listen)
+    }
   }
 
   function setStaet(newState) {
     Object.assign(history, newState);
+    listens.forEach(listen => listen(history.location));
   }
 
   function push(pathname, state) {
     oldHistory.pushState(state, null, pathname);
-    listens.forEach(listen => listen());
     const action = 'PUSH';
     const location = { pathname, state };
     setStaet({ action, location })
@@ -51,7 +55,7 @@ export default function () {
     forwardRef,
     go,
     listen,
-    location: { pathname: window.location.pathname },
+    location: { pathname: window.location.pathname, state: oldHistory.state },
     push,
     replace,
   }
