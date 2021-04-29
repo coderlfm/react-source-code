@@ -1,20 +1,34 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter } from './react-router-dom'
+import { BrowserRouter, Route } from './react-router-dom'
+
 
 function App() {
 
 
   return <div>
+    <h1>实现react-router</h1>
     <BrowserRouter>
-
+      <Route path="/" component={Home} />
+      <Route path="/about" component={About} />
     </BrowserRouter>
-    <div >div</div>
-    <br />
-    <button >加载更多</button>
+
   </div>;
 }
 
+
+function Home(props) {
+  // console.log(props);
+  return <>
+    <h1>home</h1>
+  </>
+}
+
+function About() {
+  return <>
+    <h1>About</h1>
+  </>
+}
 
 
 

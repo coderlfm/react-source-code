@@ -13,22 +13,36 @@ export class Router extends React.Component {
       location: history.location
     }
 
-    // 监听路由改变
-    props.listen(({ location }) => {
-      console.log('location:', location);
-    })
+    if (props.listen) {
+
+      // 监听路由改变
+      this.unlisten = props.history.listen(location => {
+        console.log('location:', location);
+        this.setState(location);
+      })
+
+    }
 
   }
 
+
+  componentWillUnmount() {
+    this.unlisten && this.unlisten();
+  }
 
   render() {
 
     const value = {
-      location: this.state.location
+      location: this.state.location,
+      history: this.props.history
     }
 
-    return <RouterContext.Provider value={value}> {this.props.children} </RouterContext.Provider>
+    return <RouterContext.Provider value={value}>
+      {this.props.children}
+    </RouterContext.Provider>
+
   }
+
 }
 
 export default Router;
