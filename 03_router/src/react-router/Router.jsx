@@ -13,12 +13,13 @@ export class Router extends React.Component {
       location: history.location
     }
 
-    if (props.listen) {
+    if (props.history.listen) {
 
       // 监听路由改变
       this.unlisten = props.history.listen(location => {
+        // debugger;
         console.log('location:', location);
-        this.setState(location);
+        this.setState({ location });
       })
 
     }
@@ -36,6 +37,7 @@ export class Router extends React.Component {
       location: this.state.location,
       history: this.props.history
     }
+    // debugger;
 
     return <RouterContext.Provider value={value}>
       {this.props.children}

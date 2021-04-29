@@ -17,6 +17,15 @@ export default function () {
 
 
   function go(n) {
+    action = 'POP'
+
+    lastIndex += n;
+
+    const location = stack[lastIndex];
+
+    history.location = location;
+    window.location.hash = location.pathname;
+    setStaet(location.state);
   }
 
   function listen(listen) {
@@ -37,14 +46,17 @@ export default function () {
 
   function setStaet(newState) {
     Object.assign(history, { location: { ...history.location, ...newState } });
-    listens.forEach(listen => listen(History.location.state));
+    listens.forEach(listen => listen(history.location));
 
   }
 
   function push(pathname, state) {
+    // debugger;
+    action = 'PUSH'
     window.location.hash = pathname;
     history.location = { ...history.location, pathname };
     setStaet({ state })
+
   }
 
   function replace() {
@@ -63,9 +75,16 @@ export default function () {
     replace,
   }
 
-  // 如果用户当前不是hash则设置为hash 环境
-  !window.location.hash && (window.location.hash = window.location.pathname)
+  // debugger;
+
+  // 如果当前是第一次进入，则需要把当前页面push进去，记录第一页
+  if (!stack.length) {
+    const pathname = window.location.pathname;
+    push(pathname);
+    stack[++lastIndex] = { pathname }
+  }
 
   // console.log('history:', history);
+  window.myHistory = history;
   return history
 }

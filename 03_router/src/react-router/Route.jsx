@@ -17,6 +17,8 @@ export class Route extends React.Component {
           const { history, location } = routerVal;
           const match = location.pathname === path;
 
+          {/* debugger; */}
+          
           if (!match) {
             return null
           }
