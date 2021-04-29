@@ -7,7 +7,7 @@ function App() {
 
 
   return <div>
-    <h1>实现react-router</h1>
+    <h4>实现react-router</h4>
     <BrowserRouter>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
@@ -18,7 +18,7 @@ function App() {
 
 
 function Home(props) {
-  // console.log(props);
+  console.log(props);
   return <>
     <h1>home</h1>
   </>
