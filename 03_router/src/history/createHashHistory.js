@@ -1,7 +1,7 @@
 export default function () {
 
   const oldHistory = window.history;
-  const listens = [];
+  let listens = [];
   let action = 'POP';
   let stack = []; // 路由栈
   let lastIndex = -1;

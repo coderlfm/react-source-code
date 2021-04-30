@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 export default function () {
 
   const oldHistory = window.history;
-  const listens = [];
+  let listens = [];
 
   function back() {
     oldHistory.back();

@@ -1,5 +1,6 @@
 import React from 'react'
 import RouterContext from './RouterContext'
+import matchPath from './matchPath'
 
 export class Route extends React.Component {
 
@@ -15,15 +16,16 @@ export class Route extends React.Component {
 
           const { component: RouterComponent, path } = this.props;
           const { history, location } = routerVal;
-          const match = location.pathname === path;
+          {/* const match = location.pathname === path; */}
+          const match = matchPath(location.pathname, location.state);
 
-          {/* debugger; */}
-          
+          {/* debugger; */ }
+
           if (!match) {
             return null
           }
 
-          return <RouterComponent {...{ history, location,match }} />
+          return <RouterComponent {...{ history, location, match }} />
         }
       }
     </RouterContext.Consumer>
