@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter, HashRouter, Route } from './react-router-dom'
+import { BrowserRouter, HashRouter, Route, Link } from './react-router-dom'
 
 function App() {
 
@@ -8,6 +8,10 @@ function App() {
   return <div>
     <h4>实现react-router</h4>
     <HashRouter>
+      <div>
+        <Link to='/'>首页</Link>
+        <Link to='/about'>关于</Link>
+      </div>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
     </HashRouter>
